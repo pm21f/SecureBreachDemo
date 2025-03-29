@@ -1,5 +1,8 @@
 node_modules
 .env
 drizzle
-client/dist
-dist
+server
+.replit
+replit.nix
+replit_zip_error_log.txt
+.config
