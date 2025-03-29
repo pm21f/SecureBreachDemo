@@ -73,10 +73,9 @@ export function setupAuth(app: Express) {
         password: await hashPassword(req.body.password),
       });
 
-      const safeUser = { ...user };
-      delete safeUser.password;
+      const { password, ...safeUser } = user;
 
-      req.login(user, (err) => {
+      req.login(user, (err: Error) => {
         if (err) return next(err);
         res.status(201).json(safeUser);
       });
@@ -86,15 +85,14 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/login", (req, res, next) => {
-    passport.authenticate("local", (err, user, info) => {
+    passport.authenticate("local", (err: Error | null, user: SelectUser | false, info: any) => {
       if (err) return next(err);
       if (!user) return res.status(401).json({ message: "Invalid credentials" });
       
-      req.login(user, (err) => {
+      req.login(user, (err: Error) => {
         if (err) return next(err);
         
-        const safeUser = { ...user };
-        delete safeUser.password;
+        const { password, ...safeUser } = user;
         
         res.status(200).json(safeUser);
       });
@@ -102,7 +100,7 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/logout", (req, res, next) => {
-    req.logout((err) => {
+    req.logout((err: Error) => {
       if (err) return next(err);
       res.sendStatus(200);
     });
@@ -111,8 +109,7 @@ export function setupAuth(app: Express) {
   app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     
-    const safeUser = { ...req.user };
-    delete safeUser.password;
+    const { password, ...safeUser } = req.user;
     
     res.json(safeUser);
   });

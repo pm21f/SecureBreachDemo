@@ -22,7 +22,7 @@ export interface IStorage {
   deletePost(id: number): Promise<boolean>;
   
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: any; // Using any for SessionStore type compatibility
 }
 
 export class MemStorage implements IStorage {
@@ -30,7 +30,7 @@ export class MemStorage implements IStorage {
   private posts: Map<number, Post>;
   private userIdCounter: number;
   private postIdCounter: number;
-  public sessionStore: session.SessionStore;
+  public sessionStore: any; // Using any for SessionStore type compatibility
 
   constructor() {
     this.users = new Map();
@@ -55,8 +55,11 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userIdCounter++;
-    const now = new Date();
-    const user: User = { ...insertUser, id };
+    const user: User = { 
+      ...insertUser, 
+      id,
+      bio: insertUser.bio || null, // Ensure bio is never undefined
+    };
     this.users.set(id, user);
     return user;
   }
@@ -74,7 +77,12 @@ export class MemStorage implements IStorage {
   async createPost(insertPost: InsertPost): Promise<Post> {
     const id = this.postIdCounter++;
     const now = new Date();
-    const post: Post = { ...insertPost, id, createdAt: now };
+    const post: Post = { 
+      ...insertPost, 
+      id, 
+      createdAt: now,
+      visibility: insertPost.visibility || "public" // Ensure visibility is never undefined
+    };
     this.posts.set(id, post);
     return post;
   }

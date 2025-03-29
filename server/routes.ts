@@ -22,8 +22,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     // Don't return the hashed password
-    const safeUser = { ...user };
-    delete safeUser.password;
+    const { password, ...safeUser } = user;
     
     res.json(safeUser);
   });
@@ -48,8 +47,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     // Don't return the hashed password
-    const safeUser = { ...updatedUser };
-    delete safeUser.password;
+    const { password, ...safeUser } = updatedUser;
     
     res.json(safeUser);
   });
